@@ -375,8 +375,12 @@ def register_callbacks(app):
                 mode="markers",
                 marker=dict(size=3, opacity=0.8, color=room_colors[rt]),
                 name=rt,
-                text=sub['price_clean'],
-                hovertemplate="Price: $%{text}<extra></extra>"
+                customdata=sub[["room_type", "price_clean"]],
+                hovertemplate=(
+                    "%{customdata[0]}<br>"          # room type
+                    "Price: $%{customdata[1]:,.0f}" # formatted price
+                    "<extra></extra>"
+                )
             ))
 
         # Subway
@@ -385,7 +389,8 @@ def register_callbacks(app):
             mode="markers",
             marker=dict(size=5, color="black"),
             name="Subway Station",
-            hovertext=subway_df['Stop Name']
+            customdata=subway_df[['Stop Name']],
+            hovertemplate="%{customdata[0]}<extra></extra>"
         ))
 
         map_fig.update_layout(
