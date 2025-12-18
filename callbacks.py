@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output, State
 from dash import html
 import pandas as pd
 
-from data_manager import airbnb_df, aff_points, council_choropleth_trace, nta_geojson, nta_stats, airbnb_10k, df_map, subway_df, room_colors
+from data_manager import airbnb_df, aff_points, council_choropleth_trace, nta_geojson, airbnb_10k, df_map, subway_df, room_colors
 from data_manager import (
     merged_zip_data,
     nyc_zip,
@@ -35,11 +35,11 @@ def register_callbacks(app):
 
         fig = go.Figure()
 
-        nta_stats_filtered = nta_stats.copy()
+        airbnb_df_filtered = airbnb_df.copy()
 
         if selected_neighborhoods:
-            nta_stats_filtered = nta_stats_filtered[
-                nta_stats_filtered["neighborhood_group_cleansed"].isin(selected_neighborhoods)
+            airbnb_df_filtered = airbnb_df_filtered[
+                airbnb_df_filtered["neighborhood_group_cleansed"].isin(selected_neighborhoods)
             ]
 
         # PLACEHOLDER CODE FOR FIRST TRY OF POLYGONS:
@@ -47,11 +47,11 @@ def register_callbacks(app):
         # plot Airbnb points only if selected
         if view_mode == "airbnb_points":
             fig.add_trace(go.Scattermapbox(
-                lat=airbnb_df["latitude"],
-                lon=airbnb_df["longitude"],
+                lat=airbnb_df_filtered["latitude"],
+                lon=airbnb_df_filtered["longitude"],
                 mode="markers",
                 marker=dict(size=4, opacity=0.15),
-                hovertext=airbnb_df["name"],
+                hovertext=airbnb_df_filtered["name"],
                 hoverinfo="text"
             ))
 
@@ -457,10 +457,7 @@ def register_callbacks(app):
     # ------------------------------------------------------------
 
     @app.callback(
-        [
-            Output("crime-map", "figure"),
-            Output("crime-description-box", "children")
-        ],
+        Output("crime-map", "figure"),
         Input("crime-map-selector", "value")
     )
 
@@ -487,16 +484,12 @@ def register_callbacks(app):
                 featureidkey="properties.zipcode",
                 color="total_major_crime_reports",
                 hover_data=["zipcode", "total_major_crime_reports", "airbnb_count", "average_price"],
-                color_continuous_scale="Reds",
+                color_continuous_scale="Viridis",
                 opacity=0.7,
             )
             fig.update_layout(**common_layout)
 
-            desc = html.P(
-                "This map shows the total number of NYPD major crime reports per ZIP Code.",
-                style={"fontSize": "18px"}
-            )
-            return fig, desc
+            return fig
 
         # --------------------------------------------------------
         # MODE 2: Airbnb Count Choropleth
@@ -509,16 +502,12 @@ def register_callbacks(app):
                 featureidkey="properties.zipcode",
                 color="airbnb_count",
                 hover_data=["zipcode", "total_major_crime_reports", "airbnb_count", "average_price"],
-                color_continuous_scale="Blues",
+                color_continuous_scale="Viridis",
                 opacity=0.7,
             )
             fig.update_layout(**common_layout)
 
-            desc = html.P(
-                "Airbnb listing density by ZIP Code. Darker shades represent more active listings.",
-                style={"fontSize": "18px"}
-            )
-            return fig, desc
+            return fig
 
         # --------------------------------------------------------
         # MODE 3: Average Price Choropleth
@@ -531,16 +520,12 @@ def register_callbacks(app):
                 featureidkey="properties.zipcode",
                 color="average_price",
                 hover_data=["zipcode", "total_major_crime_reports", "airbnb_count", "average_price"],
-                color_continuous_scale="Greens",
+                color_continuous_scale="Viridis",
                 opacity=0.7,
             )
             fig.update_layout(**common_layout)
 
-            desc = html.P(
-                "Average Airbnb nightly price per ZIP Code.",
-                style={"fontSize": "18px"}
-            )
-            return fig, desc
+            return fig
 
         # --------------------------------------------------------
         # MODE 4: Bivariate Crime × Airbnb Classification
@@ -564,21 +549,7 @@ def register_callbacks(app):
             )
             fig.update_layout(**common_layout)
 
-            desc = html.Div(
-                [
-                    html.H3("Bivariate Crime × Airbnb Legend", style={"marginBottom": "5px"}),
-                    html.Ul(
-                        [
-                            html.Li("🔴 High Crime / High Airbnb Listings"),
-                            html.Li("🟠 High Crime / Low Airbnb Listings"),
-                            html.Li("🔵 Low Crime / High Airbnb Listings"),
-                            html.Li("🟦 Low Crime / Low Airbnb Listings"),
-                        ],
-                        style={"fontSize": "18px", "lineHeight": "1.6"},
-                    )
-                ]
-            )
-            return fig, desc
+            return fig
 
         # fallback
         return go.Figure(), "Select a layer to begin."

@@ -80,5 +80,22 @@ affordable_housing_layout = html.Div(
             style={"padding": "10px 20px"},
         ),
         dcc.Graph(id="affh-map"),
+
+        html.Br(),
+
+        html.Div(
+            id="affh-description-box",
+            children=[
+                html.P([
+                    "Airbnb Listings – Blue points showing Airbnb listings from the last 12 months, filtered by neighborhood if selected.",
+                    html.Br(),
+                    "Affordable Housing Units (by Project) – Greenish circles whose size and color reflect the number of ‘All Counted Units’ at each project. The year slider controls which completion years are shown.",
+                    html.Br(),
+                    "Total Affordable Units (within Council District) – Purple/blue polygons representing the total number of affordable units in each NYC Council District, with darker colors indicating more units."
+                ],
+                style={"fontSize": "16px", "marginTop": "10px"})
+            ],
+            style={"textAlign": "center", "padding": "10px 20px"}
+        )
     ]
 )

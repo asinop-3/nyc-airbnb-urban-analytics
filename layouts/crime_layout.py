@@ -3,7 +3,7 @@ from dash import html, dcc
 crime_layout = html.Div(
     [
         html.H1(
-            "NYC Crime and Airbnb Activity",
+            "NYC Crime & Airbnb Activity",
             style={"textAlign": "center", "marginBottom": "20px"}
         ),
 
@@ -32,15 +32,14 @@ crime_layout = html.Div(
         html.Br(),
 
         html.Div(
-            id="crime-description-box",
-            style={
-                "padding": "15px",
-                "border": "1px solid #ccc",
-                "borderRadius": "8px",
-                "backgroundColor": "#f8f9fa",
-                "width": "80%",
-                "margin": "auto"
-            }
-        ),
+            id="transit-description-box",
+            children=[
+                html.P([
+                    "This visualization maps the relationship between Airbnb listings and crime reports across NYC ZIP codes using simple high- and low-category groupings. Manhattan and parts of Brooklyn show higher concentrations of both Airbnb listings and crime, while many outer-borough areas fall into the low crime–low listing category. The map emphasizes spatial patterns and comparison without implying causation."
+                    ],
+                style={"fontSize": "16px", "marginTop": "10px"})
+            ],
+            style={"textAlign": "center", "padding": "10px 20px"}
+        )
     ]
 )

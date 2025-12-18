@@ -6,7 +6,7 @@ from layouts.affordable_housing_layout import affordable_housing_layout
 
 def create_layout():
     return html.Div([ 
-        html.H1("Airbnb and NYC Housing", style={'textAlign': 'center'}), 
+        html.H1("Airbnb & Neighborhood Factors in NYC", style={'textAlign': 'center'}), 
 
         # the drop down for switching views
         html.Div(
@@ -15,8 +15,8 @@ def create_layout():
                 dcc.Dropdown(
                     id="view-selector",
                     options=[
-                        {"label": "Airbnb Points", "value": "airbnb_points"},
-                        {"label": "Population Choropleth", "value": "population"},
+                        {"label": "Airbnb Ditribution", "value": "airbnb_points"},
+                        {"label": "Airbnb Density", "value": "population"},
                         {"label": "Affordable Housing", "value": "affh"},
                         {"label": "Transit", "value": "transit"},
                         {"label": "Crime", "value": "crime"},

@@ -19,7 +19,6 @@ AIRBNB_FILE = os.path.join(DATA_DIR, "airbnb_one_year.csv") # change this to one
 AFFORDABLE_HOUSING_FILE = os.path.join(DATA_DIR, "Affordable_Housing_Production_by_Building.csv")
 COUNCIL_GEOJSON_FILE = os.path.join(DATA_DIR, "nycc.json")
 TAB_GEOJSON = os.path.join(DATA_DIR, "NYC_Neighborhood_Tabulation_Areas_2020.geojson")
-STATS_CSV = os.path.join(DATA_DIR, "NTA_stats.csv")
 AIRBNB_10K = os.path.join(DATA_DIR, "NTA_airbnb_10k.csv")
 CRIME_ZIP_CSV = os.path.join(DATA_DIR, "merged_zip_data.csv")
 ZIP_GEOJSON = os.path.join(DATA_DIR, "nyc_zipcodes.geojson")
@@ -38,10 +37,7 @@ borough_list = airbnb_df['neighborhood_group_cleansed'].unique().tolist() # list
 
 aff_raw = pd.read_csv(AFFORDABLE_HOUSING_FILE) # affordable housing
 
-nta_stats = pd.read_csv(STATS_CSV) # airbnb and calculated statistics for NTA
-
 airbnb_10k = pd.read_csv(AIRBNB_10K) # airbnb per 10k
-
 
 with open(COUNCIL_GEOJSON_FILE, "r") as f: # council geojson
         council_geojson = json.load(f)
@@ -320,19 +316,19 @@ df_map['dist_to_subway_meters'] = distances * 111139
 # Colors
 # -------------------------------------------------
 room_colors = {
-    "Entire home/apt": "#1f77b4",
-    "Private room": "#2ca02c",
-    "Shared room": "#ff7f0e",
-    "Hotel room": "#9467bd",
+    "Entire home/apt": "#FDE725",  # yellow
+    "Private room":    "#7AD151",  # green
+    "Shared room":     "#22A884",  # teal
+    "Hotel room":      "#440154",  # purple
 }
 
 ### CRIME
 
 crime_color_map = {
-    "High crime / High listings": "#d7191c",
-    "High crime / Low listings":  "#fdae61",
-    "Low crime / High listings":  "#2c7bb6",
-    "Low crime / Low listings":   "#abd9e9",
+    "High crime / High listings": "#FDE725",  # yellow
+    "High crime / Low listings":  "#7AD151",  # green
+    "Low crime / High listings":  "#21918C",  # teal/blue
+    "Low crime / Low listings":   "#440154",  # purple
 }
 
 # ------------------------------------------------------------
