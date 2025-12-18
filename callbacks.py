@@ -2,21 +2,28 @@
 
 import plotly.express as px
 import plotly.graph_objects as go
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 from dash import html
 import pandas as pd
 
-from data_manager import airbnb_df, aff_points, council_choropleth_trace, nta_geojson, airbnb_10k, df_map, subway_df, room_colors
 from data_manager import (
+    airbnb_df,
+    aff_points,
+    council_choropleth_trace,
+    nta_geojson,
+    airbnb_10k,
+    df_map,
+    subway_df,
+    room_colors,
     merged_zip_data,
     nyc_zip,
     crime_color_map
-)   
+)
+
 from layouts.airbnb_only_layout import airbnb_only_layout
 from layouts.affordable_housing_layout import affordable_housing_layout
 from layouts.transit_layout import transit_layout
 from layouts.crime_layout import crime_layout
-
 
 
 def register_callbacks(app):
@@ -330,16 +337,11 @@ def register_callbacks(app):
     [
         Output("transit-main-map", "figure"),
         Output("transit-scatter", "figure"),
-        Output("transit-luxury-map", "figure"),
-        Output("transit-room-filter", "options"),
+        Output("transit-luxury-map", "figure")
     ],
     Input("transit-room-filter", "value")
     )
     def update_transit_dashboard(selected_category):
-
-        # Build dropdown options on load
-        dropdown_options = [{"label": "Compare All Categories", "value": "ALL"}] + \
-                        [{"label": rt, "value": rt} for rt in df_map['room_type'].unique()]
 
         # Filter
         if selected_category == "ALL":
@@ -398,20 +400,92 @@ def register_callbacks(app):
         # ------------------------------------------
         scatter_df = filt[(filt["price_clean"] < 1000) & (filt["dist_to_subway_meters"] < 3000)]
 
-        scatter_fig = px.scatter(
-            scatter_df,
-            x="dist_to_subway_meters",
-            y="price_clean",
-            color=None if selected_category != "ALL" else "room_type",
-            color_discrete_map=room_colors,
-            opacity=0.4,
-            trendline="ols",
-            labels={
-                "dist_to_subway_meters": "Distance to Subway (meters)",
-                "price_clean": "Price ($)"
-            },
-            template="plotly_white"
-        )
+        if selected_category == "ALL":
+            scatter_fig = px.scatter(
+                scatter_df,
+                x="dist_to_subway_meters",
+                y="price_clean",
+                color="room_type",
+                color_discrete_map=room_colors,
+                opacity=0.4,
+                labels={
+                    "dist_to_subway_meters": "Distance to Subway (meters)",
+                    "price_clean": "Price ($)"
+                },
+                template="plotly_white"
+            )
+        else:
+            # Force color for single category
+            scatter_fig = px.scatter(
+                scatter_df,
+                x="dist_to_subway_meters",
+                y="price_clean",
+                opacity=0.4,
+                labels={
+                    "dist_to_subway_meters": "Distance to Subway (meters)",
+                    "price_clean": "Price ($)"
+                },
+                template="plotly_white"
+            )
+
+            # Manually recolor markers
+            scatter_fig.update_traces(marker=dict(color=room_colors[selected_category]))
+
+        # ------------------------------------------
+        # MULTI-CATEGORY NUMPY TRENDLINES
+        # ------------------------------------------
+        import numpy as np
+
+        if selected_category == "ALL":
+            # Loop through all categories and add separate trendlines
+            for rt, color in room_colors.items():
+                sub = scatter_df[scatter_df["room_type"] == rt]
+
+                if len(sub) > 1:
+                    x = sub["dist_to_subway_meters"].values
+                    y = sub["price_clean"].values
+
+                    # Perform linear regression
+                    m, b = np.polyfit(x, y, 1)
+
+                    reg_x = np.linspace(x.min(), x.max(), 200)
+                    reg_y = m * reg_x + b
+
+                    scatter_fig.add_trace(
+                        go.Scatter(
+                            x=reg_x,
+                            y=reg_y,
+                            mode="lines",
+                            line=dict(color=room_colors[rt], width=3),
+                            name=f"{rt} Trendline",
+                            showlegend=True
+                        )
+                    )
+        else:
+            # Only one category selected - single trendline
+            x = scatter_df["dist_to_subway_meters"].values
+            y = scatter_df["price_clean"].values
+
+            if len(scatter_df) > 1:
+                m, b = np.polyfit(x, y, 1)
+                reg_x = np.linspace(x.min(), x.max(), 200)
+                reg_y = m * reg_x + b
+
+                # Use that category's color
+                color = room_colors[selected_category]
+
+                scatter_fig.add_trace(
+                    go.Scatter(
+                        x=reg_x,
+                        y=reg_y,
+                        mode="lines",
+                        line=dict(color=room_colors[selected_category], width=3),
+                        name=f"{selected_category} Trendline",
+                        showlegend=True
+                    )
+                )
+
+
 
         # ------------------------------------------
         # 3. LUXURY MAP — Avg Price Near Stations
@@ -449,7 +523,7 @@ def register_callbacks(app):
             margin={"l":0,"r":0,"t":40,"b":0}
         )
 
-        return map_fig, scatter_fig, lux_fig, dropdown_options
+        return map_fig, scatter_fig, lux_fig
     
 
     # ------------------------------------------------------------

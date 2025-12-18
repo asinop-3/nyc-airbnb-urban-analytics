@@ -15,13 +15,14 @@ DATA_DIR = "data"
 
 # this is where we construct paths to our data
 # add whatever you need here to access your respective data files
-AIRBNB_FILE = os.path.join(DATA_DIR, "airbnb_one_year.csv") # change this to one year file
+AIRBNB_FILE = os.path.join(DATA_DIR, "airbnb_one_year.csv")
 AFFORDABLE_HOUSING_FILE = os.path.join(DATA_DIR, "Affordable_Housing_Production_by_Building.csv")
 COUNCIL_GEOJSON_FILE = os.path.join(DATA_DIR, "nycc.json")
 TAB_GEOJSON = os.path.join(DATA_DIR, "NYC_Neighborhood_Tabulation_Areas_2020.geojson")
 AIRBNB_10K = os.path.join(DATA_DIR, "NTA_airbnb_10k.csv")
 CRIME_ZIP_CSV = os.path.join(DATA_DIR, "merged_zip_data.csv")
 ZIP_GEOJSON = os.path.join(DATA_DIR, "nyc_zipcodes.geojson")
+SUBWAY_FILE = os.path.join(DATA_DIR, "MTA_Subway_Stations_20251217.csv")
 
 # NYC bounding box
 NYC_LAT_MIN = 40.45
@@ -49,6 +50,10 @@ merged_zip_data = pd.read_csv(CRIME_ZIP_CSV)
 
 with open(ZIP_GEOJSON, "r") as f:
     nyc_zip = json.load(f)
+
+subway_df = pd.read_csv(SUBWAY_FILE)
+subway_df = subway_df.rename(columns={'GTFS Latitude': 'lat', 'GTFS Longitude': 'lon'})
+
 
 ### DEFINE BASE MAP ###
 
@@ -295,12 +300,6 @@ df_map = df_clean.groupby(
 df_map = df_map[df_map['price_clean'] <= 5000]
 
 # -------------------------------------------------
-# Load Subway stations
-# -------------------------------------------------
-subway_df = pd.read_csv("https://data.ny.gov/api/views/39hk-dx4f/rows.csv?accessType=DOWNLOAD")
-subway_df = subway_df.rename(columns={'GTFS Latitude': 'lat', 'GTFS Longitude': 'lon'})
-
-# -------------------------------------------------
 # Compute nearest subway distance for each listing
 # -------------------------------------------------
 coords_list = df_map[['latitude','longitude']].values
@@ -316,10 +315,10 @@ df_map['dist_to_subway_meters'] = distances * 111139
 # Colors
 # -------------------------------------------------
 room_colors = {
-    "Entire home/apt": "#FDE725",  # yellow
-    "Private room":    "#7AD151",  # green
-    "Shared room":     "#22A884",  # teal
-    "Hotel room":      "#440154",  # purple
+    'Entire home/apt': '#1f77b4', # Blue
+    'Private room':    '#2ca02c', # Green
+    'Shared room':     '#ff7f0e', # Orange
+    'Hotel room':      '#9467bd'  # Purple
 }
 
 ### CRIME

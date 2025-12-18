@@ -1,4 +1,5 @@
 from dash import html, dcc
+from data_manager import df_map
 
 transit_layout = html.Div([
     html.H1("NYC Airbnb & Transit Analytics", style={'textAlign': 'center'}),
@@ -8,8 +9,9 @@ transit_layout = html.Div([
         html.Label("Filter Dashboard by Room Type:"),
         dcc.Dropdown(
             id='transit-room-filter',
+             options=[{"label": "Compare All Categories", "value": "ALL"}] +
+            [{"label": rt, "value": rt} for rt in sorted(df_map['room_type'].unique())],
             value='ALL',
-            options=[{"label": "Compare All Categories", "value": "ALL"}],
             clearable=False,
             style={'width': '50%'}
         )
@@ -38,17 +40,17 @@ transit_layout = html.Div([
     html.Br(),
 
     html.Div(
-            id="transit-description-box",
-            children=[
-                html.P([
-                    "Listing locations: Different categories of Airbnb listings and subway stations in NYC.",
-                    html.Br(),
-                    "Proximity premium: Shows price trend of Airbnbs based on distance to the nearest subway station.",
-                    html.Br(),
-                    "Luxury lines: Subway stations colored by the average price of Airbnbs within a 10-minute walk (800m)."
-                ],
-                style={"fontSize": "16px", "marginTop": "10px"})
+        id="transit-description-box",
+        children=[
+            html.P([
+                "Listing locations: Different categories of Airbnb listings and subway stations in NYC.",
+                html.Br(),
+                "Proximity premium: Shows price trend of Airbnbs based on distance to the nearest subway station.",
+                html.Br(),
+                "Luxury lines: Subway stations colored by the average price of Airbnbs within a 10-minute walk (800m)."
             ],
-            style={"textAlign": "center", "padding": "10px 20px"}
-        )
+            style={"fontSize": "16px", "marginTop": "10px"})
+        ],
+        style={"textAlign": "center", "padding": "10px 20px"}
+    )
 ])
