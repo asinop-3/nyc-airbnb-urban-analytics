@@ -1,5 +1,18 @@
 # NYC Airbnb, Housing, Transit & Neighborhood Analytics - Methodology
 
+**Interactive Dashboard:** https://0d4b9b9f-5526-4240-aa45-bf6bce602d11.plotly.app/
+
+**Tech Stack:** Python, Pandas, GeoPandas, Scikit-learn, Shapely, Plotly, Dash
+
+## Authors
+
+Fatima Nasyr  
+Feriha Ozturk  
+Anthony Sinopoli  
+Tahir Zogaj  
+
+*Listed alphabetically*
+
 ## 1. Overview: Domain
 This project investigates how short-term rental activity (Airbnb) interacts with urban infrastructure, housing pressure, and neighborhood conditions across New York City. In a city where tourism, public transit, housing affordability, and population density are tightly interconnected, this analysis explores how Airbnb listings relate to transit accessibility, eviction activity, crime reports, residential population patterns, and affordable housing development.
 
